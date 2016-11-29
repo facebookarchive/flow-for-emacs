@@ -112,6 +112,21 @@
 
 (global-set-key (kbd "M-.") 'flow-get-def)
 
+(defun flow-get-imports ()
+  "get imports for current file"
+  (interactive)
+  (let ((file (buffer-file-name)))
+    (switch-to-buffer-other-window "*Shell Command Output*")
+    (flow-start)
+    (shell-command
+     (format "%s get-imports --from emacs %s"
+             flow_binary
+             file))
+    (compilation-mode))
+)
+
+(global-set-key (kbd "C-c C-i") 'flow-get-def)
+
 (defun flow-autocomplete ()
   "autocomplete"
   (interactive)
