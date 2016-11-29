@@ -46,6 +46,12 @@ Shows a diff for the current file with missing types inferred.
 
 Shortcut: `C-t`
 
+### flow-get-imports
+
+Shows the imports of the current file.
+
+Shortcut: `C-t C-i`
+
 ### flow-get-def
 
 Shows where the reference at the current point is defined.
