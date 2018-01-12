@@ -58,5 +58,9 @@ Shows a list of possible completions at the current point.
 
 Shortcut: `M-TAB`
 
+### flow-coverage
+
+Shows the coverage of the current file in the minibuffer.
+
 [flowtype]: http://flowtype.org
 [flow]: https://github.com/facebook/flow
