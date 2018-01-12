@@ -134,6 +134,13 @@
 
 (global-set-key (kbd "M-TAB") 'flow-autocomplete)
 
+(defun flow-coverage ()
+  "coverage"
+  (interactive)
+  (let ((file (buffer-file-name)))
+    (shell-command
+     (format "%s coverage --quiet %s" flow_binary file))))
+
 (add-hook 'kill-emacs-hook
   (lambda ()
     (flow-stop)))
