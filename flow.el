@@ -39,6 +39,8 @@
   (flow/start)
   (compile (format "%s status --from emacs; exit 0" flow/binary)))
 
+(define-key flow-mode-map (kbd "C-c C-s") #'flow/status)
+
 (defun flow/type-at-pos ()
   "show type"
   (interactive)
@@ -57,6 +59,8 @@
     (compilation-mode)
     (switch-to-buffer-other-window buffer)))
 
+(define-key flow-mode-map (kbd "C-c C-t") #'flow/type-at-pos)
+
 (defun flow/suggest ()
   "fill types"
   (interactive)
@@ -72,6 +76,8 @@
              region))
     (compilation-mode)
     (switch-to-buffer-other-window buffer)))
+
+(define-key flow-mode-map (kbd "C-c C-/") #'flow-suggest)
 
 (defun flow/goto-definition ()
   "jump to definition"
@@ -89,6 +95,8 @@
              line
              (1+ col)))
     (compilation-mode)))
+
+(define-key flow-mode-map (kbd "M-.") #'flow/goto-definition)
 
 (defun flow/autocomplete ()
   "autocomplete"
@@ -109,12 +117,7 @@
     (compilation-mode)
     (switch-to-buffer-other-window buffer)))
 
-(bind-keys :map flow-mode-map
-           ("M-." . flow/goto-definition)
-           ("C-c C-/" . flow-suggest)
-           ("C-c C-t" . flow/type-at-pos)
-           ("C-c C-s" . flow/status)
-           ("M-TAB" . flow/autocomplete))
+(define-key flow-mode-map (kbd "M-TAB") #'flow/autocomplete)
 
 (define-minor-mode flow-mode
   "Minor mode for working with JavaScript Flow types."
