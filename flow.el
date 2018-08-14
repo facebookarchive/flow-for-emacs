@@ -7,52 +7,41 @@
 ;; rights can be found in the PATENTS file in the same directory.
 ;;
 
-(setq flow_binary "flow")
+(defvar flow-mode-map (make-sparse-keymap))
 
-(defun column-number-at-pos (pos)
+(defvar flow/binary "flow")
+
+(defun flow/column-number-at-pos (pos)
   "column number at pos"
-  (save-excursion (goto-char pos) (current-column))
-)
+  (save-excursion (goto-char pos) (current-column)))
 
-(defun string-of-region ()
+(defun flow/string-of-region ()
   "string of region"
   (if (use-region-p)
       (let ((begin (region-beginning))
             (end (region-end)))
         (format ":%d:%d,%d:%d"
                 (line-number-at-pos begin)
-                (column-number-at-pos begin)
+                (flow/column-number-at-pos begin)
                 (line-number-at-pos end)
-                (column-number-at-pos end)))
-    "")
-)
+                (flow/column-number-at-pos end)))
+    ""))
 
-(defun get-assoc-value (key alist)
-  "get assoc value"
-  (setq blah (assoc key alist))
-  (if blah
-      (cdr blah)
-    nil)
-)
+(defun flow/start ()
+  (shell-command (format "%s start" flow/binary)))
 
-(defun flow-start ()
-  (shell-command (format "%s start" flow_binary))
-)
+(defun flow/stop ()
+  (shell-command (format "%s stop" flow/binary)))
 
-(defun flow-stop ()
-  (shell-command (format "%s stop" flow_binary))
-)
-
-(defun flow-status ()
+(defun flow/status ()
   "Initialize flow"
   (interactive)
-  (flow-start)
-  (compile (format "%s status --from emacs; exit 0" flow_binary))
-)
+  (flow/start)
+  (compile (format "%s status --from emacs; exit 0" flow/binary)))
 
-(global-set-key (kbd "C-x C-m") 'flow-status)
+(define-key flow-mode-map (kbd "C-c C-s") #'flow/status)
 
-(defun flow-type-at-pos ()
+(defun flow/type-at-pos ()
   "show type"
   (interactive)
   (let ((file (buffer-file-name))
@@ -60,39 +49,37 @@
         (col (current-column))
         (buffer (current-buffer)))
     (switch-to-buffer-other-window "*Shell Command Output*")
-    (flow-start)
+    (flow/start)
     (shell-command
      (format "%s type-at-pos --from emacs %s %d %d"
-             flow_binary
+             flow/binary
              file
              line
              (1+ col)))
     (compilation-mode)
-    (switch-to-buffer-other-window buffer))
-)
+    (switch-to-buffer-other-window buffer)))
 
-(global-set-key (kbd "C-c C-t") 'flow-type-at-pos)
+(define-key flow-mode-map (kbd "C-c C-t") #'flow/type-at-pos)
 
-(defun flow-suggest ()
+(defun flow/suggest ()
   "fill types"
   (interactive)
   (let ((file (buffer-file-name))
-        (region (string-of-region))
+        (region (flow/string-of-region))
         (buffer (current-buffer)))
     (switch-to-buffer-other-window "*Shell Command Output*")
-    (flow-start)
+    (flow/start)
     (shell-command
      (format "%s suggest %s%s"
-             flow_binary
+             flow/binary
              file
              region))
     (compilation-mode)
-    (switch-to-buffer-other-window buffer))
-)
+    (switch-to-buffer-other-window buffer)))
 
-(global-set-key (kbd "C-t") 'flow-suggest)
+(define-key flow-mode-map (kbd "C-c C-/") #'flow-suggest)
 
-(defun flow-get-def ()
+(defun flow/goto-definition ()
   "jump to definition"
   (interactive)
   (let ((file (buffer-file-name))
@@ -100,19 +87,18 @@
         (col (current-column))
         (buffer (current-buffer)))
     (switch-to-buffer-other-window "*Shell Command Output*")
-    (flow-start)
+    (flow/start)
     (shell-command
      (format "%s get-def --from emacs %s %d %d"
-             flow_binary
+             flow/binary
              file
              line
              (1+ col)))
-    (compilation-mode))
-)
+    (compilation-mode)))
 
-(global-set-key (kbd "M-.") 'flow-get-def)
+(define-key flow-mode-map (kbd "M-.") #'flow/goto-definition)
 
-(defun flow-autocomplete ()
+(defun flow/autocomplete ()
   "autocomplete"
   (interactive)
   (let ((file (buffer-file-name))
@@ -120,20 +106,32 @@
         (col (current-column))
         (buffer (current-buffer)))
     (switch-to-buffer-other-window "*Shell Command Output*")
-    (flow-start)
+    (flow/start)
     (shell-command
      (format "%s autocomplete %s %d %d < %s"
-             flow_binary
+             flow/binary
              file
              line
              (1+ col)
              file))
     (compilation-mode)
-    (switch-to-buffer-other-window buffer))
-)
+    (switch-to-buffer-other-window buffer)))
 
-(global-set-key (kbd "M-TAB") 'flow-autocomplete)
+(define-key flow-mode-map (kbd "M-TAB") #'flow/autocomplete)
+
+(define-minor-mode flow-mode
+  "Minor mode for working with JavaScript Flow types."
+  :init-value nil
+  :lighter " Flow"
+  :keymap flow-mode-map)
+
+(defun flow/maybe-start ()
+  (interactive)
+  (save-excursion
+    (goto-char 1)
+    (when (looking-at "^[[:space:]]*/[*/][[:space:]]*@flow")
+      (flow-mode t))))
 
 (add-hook 'kill-emacs-hook
   (lambda ()
-    (flow-stop)))
+    (flow/stop)))
