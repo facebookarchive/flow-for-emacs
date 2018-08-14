@@ -9,7 +9,7 @@
 
 (defvar flow-mode-map (make-sparse-keymap))
 
-(setq flow/binary "flow")
+(defvar flow/binary "flow")
 
 (defun flow/column-number-at-pos (pos)
   "column number at pos"

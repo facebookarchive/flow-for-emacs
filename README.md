@@ -28,13 +28,13 @@ containing the current file (unless already started). Likewise, when you exit
 the editor, the Flow server for the project containing the current file is
 stopped.
 
-### flow-status
+### flow/status
 
 Shows a list of current errors. 
 
-Shortcut: `C-x RET`
+Shortcut: `C-c C-s`
 
-### flow-type-at-pos
+### flow/type-at-pos
 
 Shows the type of the expression at the current point.
 
@@ -44,7 +44,7 @@ Shortcut: `C-c C-t`
 
 Shows a diff for the current file with missing types inferred.
 
-Shortcut: `C-t`
+Shortcut: `C-c C-/`
 
 ### flow-get-def
 
