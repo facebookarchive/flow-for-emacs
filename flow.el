@@ -7,7 +7,7 @@
 ;; rights can be found in the PATENTS file in the same directory.
 ;;
 
-(setq flow_binary "flow")
+(setq flow_binary "npx flow")
 
 (defun column-number-at-pos (pos)
   "column number at pos"
